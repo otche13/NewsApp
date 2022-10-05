@@ -1,6 +1,11 @@
 package ru.otche13.newsapp
 
+import android.app.Application
+import android.content.Context
 import android.os.Bundle
+import android.telephony.TelephonyManager
+import android.util.Log
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.fragment.NavHostFragment
 import dagger.hilt.android.AndroidEntryPoint
@@ -18,17 +23,7 @@ class MainActivity : AppCompatActivity() {
             .findFragmentById(R.id.nav_host_fragment) as NavHostFragment?
             ?: return
 
-//        val telMgr=PackageManager.has
-//
-//        val simStateMain: Int = PackageManager.FEATURE_TELEPHONY
-//        val simStateSecond: Int = telMgr.getSimState(1)
-
-//        fun isSimSupport(context: Activity):Boolean
-////        {
-//            TelephonyManager tm = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);  //gets the current TelephonyManager
-//            return !(tm.getSimState() == TelephonyManager.SIM_STATE_ABSENT);
 
 
     }
-
 }
