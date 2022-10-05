@@ -12,8 +12,8 @@ import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import ru.otche13.newsapp.data.api.NewsService
-import ru.otche13.newsapp.data.db.ArticleDao
-import ru.otche13.newsapp.data.db.ArticleDatabase
+import ru.otche13.newsapp.data.db.WebDatabase
+import ru.otche13.newsapp.data.db.WebItemDao
 import ru.otche13.newsapp.utils.Constants.Companion.BASE_URL
 import javax.inject.Singleton
 
@@ -48,12 +48,12 @@ object AppModule {
     fun provideAtricleDatabase(@ApplicationContext context: Context) =
         Room.databaseBuilder(
             context,
-        ArticleDatabase::class.java,
+        WebDatabase::class.java,
             "article_database"
         ).build()
 
     @Provides
-    fun provideArticleDao(appDatabase: ArticleDatabase): ArticleDao {
-        return appDatabase.getArticleDao()
+    fun provideArticleDao(appDatabase: WebDatabase): WebItemDao {
+        return appDatabase.getWebItemDao()
     }
 }
