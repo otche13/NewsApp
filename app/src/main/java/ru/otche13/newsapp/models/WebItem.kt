@@ -1,5 +1,6 @@
 package ru.otche13.newsapp.models
 
+import androidx.annotation.NonNull
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
@@ -8,6 +9,6 @@ import androidx.room.PrimaryKey
 data class WebItem(
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "id")
-    val id:Int = 0,
-    val urlAdress:String
+    val id: Int? = 0,
+    val url:String?=""
 )

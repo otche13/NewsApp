@@ -6,11 +6,13 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import ru.otche13.newsapp.models.WebItem
 
+
 @Dao
 interface WebItemDao {
 
-//    @Query("SELECT * FROM webItem where id=:id")
-//    fun getAllWebsItem(id: Int)
+
+    @Query("SELECT * FROM webItem ")
+    suspend fun getAllWebsItem():List<WebItem>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(webItem: WebItem)

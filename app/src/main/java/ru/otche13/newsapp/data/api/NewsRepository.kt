@@ -12,7 +12,7 @@ class NewsRepository @Inject constructor(
     suspend fun getNews(countryCode: String, pageNumber: Int) =
         newsService.getHeadlines(countryCode = countryCode, page = pageNumber)
 
-//    fun getWebItem(id:Int) = webItemDao.getAllWebsItem(id = id)
+    suspend fun getWebItem() = webItemDao.getAllWebsItem()
 
     suspend fun addWebItem(webItem: WebItem) = webItemDao.insert(webItem=webItem )
 }

@@ -1,5 +1,9 @@
 package ru.otche13.newsapp.ui.main
 
+import android.content.Context
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
+import android.os.Build
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -22,56 +26,54 @@ class MainViewModel @Inject constructor(private val repository: NewsRepository):
     val newsLiveData: MutableLiveData<Resource<NewsResponse>> = MutableLiveData()
     var newsPage = 1
 
-    init {
-        getNews("ru")
-    }
-
     private val _webData = MutableLiveData<List<WebItem>>()
     val webData: LiveData<List<WebItem>> = _webData
 
-
+    private val _webDataRoom = MutableLiveData<List<WebItem>>()
+    val webDataRoom: LiveData<List<WebItem>> = _webDataRoom
 
     val db= Firebase.firestore
 
     init {
-
-//        getDataFirebase(_webData)
-//        Log.i("getDataFirebase(_webData)","${getDataFirebase(_webData)}")
+        getWebItem()
+        getDataFirebase(_webData)
+        getNews("ru")
     }
 
-//    fun getWebItem(id:Int) = viewModelScope.launch(Dispatchers.IO) {
-//        repository.getWebItem(id)
-//    }
+     fun getWebItem() {
+         viewModelScope.launch(Dispatchers.IO) {
+             val res = repository.getWebItem()
+             println("DB size: ${res}")
+             repository.getWebItem()
+             _webDataRoom.postValue(res)
+         }
+    }
 
-    fun saveWebItem(id: Int, urlAdress:String) = viewModelScope.launch(Dispatchers.IO) {
-        val webItem = WebItem(id = id, urlAdress = urlAdress)
+    fun saveWebItem(id: Int, url:String ) = viewModelScope.launch(Dispatchers.IO) {
+        val webItem=WebItem(
+            id = id,
+            url = url
+        )
+        Log.i("saveWebItem","$webItem")
         repository.addWebItem(webItem)
-        Log.i("fdfsdfsf", "$webItem")
-
     }
 
-//    fun getUrl():String{
-//        val urlItem=getWebItem()
-//        return urlItem.toString()
-//    }
-
-//    fun getDataFirebase(webItemList: MutableLiveData<List<WebItem>>) {
-//        val _webItemsList= arrayListOf<WebItem>()
-//        db.collection("webItemfb")
-//            .get()
-//            .addOnSuccessListener {
-//                if(!it.isEmpty){
-//                    for (data in it.documents){
-//                        val webItem: WebItem? =data.toObject(WebItem::class.java)
-//                        if (webItem!=null){
-//                            _webItemsList.add(webItem)
-//
-//                        }
-//                    }
-//                    webItemList.postValue(_webItemsList)
-//                }
-//            }
-//    }
+    fun getDataFirebase(webItemList: MutableLiveData<List<WebItem>>) {
+        val _webItemsList= arrayListOf<WebItem>()
+        db.collection("webItem")
+            .get()
+            .addOnSuccessListener {
+                if(!it.isEmpty){
+                    for (data in it.documents){
+                        val webItem: WebItem? =data.toObject(WebItem::class.java)
+                        if (webItem!=null){
+                            _webItemsList.add(webItem)
+                        }
+                    }
+                    webItemList.postValue(_webItemsList)
+                }
+            }
+    }
 
     private fun getNews(countryCode: String) =
         viewModelScope.launch {
@@ -86,4 +88,30 @@ class MainViewModel @Inject constructor(private val repository: NewsRepository):
             }
         }
 
+    fun isNetworkAvailable(context: Context?): Boolean {
+        if (context == null) return false
+        val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            val capabilities = connectivityManager.getNetworkCapabilities(connectivityManager.activeNetwork)
+            if (capabilities != null) {
+                when {
+                    capabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) -> {
+                        return true
+                    }
+                    capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) -> {
+                        return true
+                    }
+                    capabilities.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET) -> {
+                        return true
+                    }
+                }
+            }
+        } else {
+            val activeNetworkInfo = connectivityManager.activeNetworkInfo
+            if (activeNetworkInfo != null && activeNetworkInfo.isConnected) {
+                return true
+            }
+        }
+        return false
+    }
 }
